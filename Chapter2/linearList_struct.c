@@ -63,9 +63,32 @@ int main()
 	
 	ListTraverse(p,print);
 
-	ListInsert(&p,2,9);
-	ListTraverse(p,print);
+	if(ListInsert(&p,2,9) != ERROR)
+	{
+		ListTraverse(p,print);
+	}
 
+	if(ListInsert(&p,p.length,7) != ERROR)
+	{
+		ListTraverse(p,print);
+	}
+	
+	if(ListInsert(&p,0,2) != ERROR )
+	{
+		ListTraverse(p,print);
+	}
+	
+	if(ListInsert(&p,-1,-1) != ERROR)
+	{
+		ListTraverse(p,print);
+	}
+	
+	if(ListInsert(&p,p.length+1,-1) != ERROR)
+	{
+		ListTraverse(p,print);
+	}
+	
+	
 	DestroyList(&p);
 	return OK;
 }
@@ -92,6 +115,14 @@ Status ListInsert(Node *L,int i,ElemType e)
 	
 		if(i == (*L).length)
 		{
+			(*L).Pointer[i] = e;
+		}
+		else if( i == 0)
+		{
+			for(count = (*L).length - 1; count >=0; count--)
+			{
+				(*L).Pointer[count+1] = (*L).Pointer[count];
+			}
 			(*L).Pointer[i] = e;
 		}
 		else
@@ -282,7 +313,7 @@ Status DestroyList(Node *L)
 {
 	if( (*L).Pointer != NULL)
 	{
-		printf("free list");
+		printf("free list\n");
 		free((*L).Pointer);
 	}
 	else
