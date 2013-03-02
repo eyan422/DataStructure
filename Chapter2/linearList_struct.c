@@ -28,7 +28,7 @@ Status NextElem(Node L,ElemType cur,ElemType *next);
 Status ListTraverse(Node L,int (*visit)());
 int print(ElemType e,int i);
 Status ListInsert(Node *L,int i,ElemType e);
-void ListDelete(Node *L,int i,ElemType e);
+Status ListDelete(Node *L,int i,ElemType *e);
 
 int main()
 {
@@ -63,16 +63,19 @@ int main()
 	
 	ListTraverse(p,print);
 
+	/*
 	if(ListInsert(&p,2,9) != ERROR)
 	{
 		ListTraverse(p,print);
 	}
+	*/
 
 	if(ListInsert(&p,p.length,7) != ERROR)
 	{
 		ListTraverse(p,print);
 	}
-	
+
+	/*
 	if(ListInsert(&p,0,2) != ERROR )
 	{
 		ListTraverse(p,print);
@@ -87,18 +90,39 @@ int main()
 	{
 		ListTraverse(p,print);
 	}
+
+	if(ListDelete(&p,2,&result) != ERROR)
+	{
+		ListTraverse(p,print);
+		printf("ListDelete-result<%d>",result);
+	}
+	*/
 	
+	if(ListDelete(&p,p.length - 1,&result) != ERROR)
+	{
+		ListTraverse(p,print);
+		printf("ListDelete-result<%d>",result);
+	}
+
+	if(ListInsert(&p,0,2) != ERROR )
+	{
+		ListTraverse(p,print);
+	}
 	
+	if(ListDelete(&p,0,&result) != ERROR)
+	{
+		ListTraverse(p,print);
+		printf("ListDelete-result<%d>",result);
+	}
+
 	DestroyList(&p);
 	return OK;
 }
+
 Status ListInsert(Node *L,int i,ElemType e)
 {
 	int count = 0;
-	/*
-	int *begin = NULL;
-	int *end = NULL;
-	*/
+	
 	if( i < 0 || i > ListLength(*L) )
 	{
 		printf( "i<%d> is out of range[0-%d]\n",i,ListLength(*L) );
@@ -111,7 +135,6 @@ Status ListInsert(Node *L,int i,ElemType e)
 	if(temp != NULL)
 	{
 		(*L).Pointer = temp;
-		//(*L).length += 1;
 	
 		if(i == (*L).length)
 		{
@@ -119,7 +142,7 @@ Status ListInsert(Node *L,int i,ElemType e)
 		}
 		else if( i == 0)
 		{
-			for(count = (*L).length - 1; count >=0; count--)
+			for(count = (*L).length - 1; count >= 0; count--)
 			{
 				(*L).Pointer[count+1] = (*L).Pointer[count];
 			}
@@ -127,10 +150,6 @@ Status ListInsert(Node *L,int i,ElemType e)
 		}
 		else
 		{
-			/*
-			begin = (*L).Pointer;
-			end   = (*L).Pointer + ((*L).length-1) * sizeof(ElemType);
-			*/
 			
 			for(count = (*L).length - 1;count >= i-1;count--)
 			{
@@ -143,6 +162,38 @@ Status ListInsert(Node *L,int i,ElemType e)
 	else
 	{
 		printf("Realloc fails\n");
+	}
+}
+
+Status ListDelete(Node *L,int i,ElemType *e)
+{
+	int count = 0;
+	
+	if( i < 0 || i > ListLength(*L) )
+	{
+		printf( "i<%d> is out of range[0-%d]\n",i,ListLength(*L) - 1 );
+		return ERROR;
+	}
+	
+	*e = (*L).Pointer[i];
+
+	if( i == (*L).length - 1 )
+	{
+		(*L).length -= 1;
+	}
+	else if( i == 0 )
+	{
+		for(count = 1; count <= (*L).length - 1; count++)
+		{
+			(*L).Pointer[count - 1] = (*L).Pointer[count];	
+		}
+	}
+	else
+	{
+		for(count = i + 1; count <= (*L).length - 1; count++)
+		{
+			(*L).Pointer[count - 1] = (*L).Pointer[count];
+		}
 	}
 }
 
