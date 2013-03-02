@@ -25,8 +25,8 @@ Status LocateElem(Node L,ElemType e,int (*compare)());
 Status equal(ElemType p1,ElemType e2);
 Status PriorElem(Node L,ElemType cur,ElemType *pre);
 Status NextElem(Node L,ElemType cur,ElemType *next);
-Status ListTraverse(List L,int (*visit)());
-int print(ElemType e);
+Status ListTraverse(Node L,int (*visit)());
+int print(ElemType e,int i);
 Status ListInsert(Node *L,int i,ElemType e);
 void ListDelete(Node *L,int i,ElemType e);
 
@@ -61,46 +61,53 @@ int main()
 	NextElem(p,5,&result);
 	printf("Next-result<%d>\n",result);
 	
-	ListTraverse(p.Pointer,print);
+	ListTraverse(p,print);
+
+	ListInsert(&p,2,9);
+	ListTraverse(p,print);
 
 	DestroyList(&p);
 	return OK;
 }
 Status ListInsert(Node *L,int i,ElemType e)
 {
-	int *count = NULL;
+	int count = 0;
+	/*
 	int *begin = NULL;
 	int *end = NULL;
-	if( i < 0 || i > (ListLength(*L) + 1) )
+	*/
+	if( i < 0 || i > ListLength(*L) )
 	{
-		printf("i<%d> is out of range[0-%d]\n",i,ListLength(*L)+1);
+		printf( "i<%d> is out of range[0-%d]\n",i,ListLength(*L) );
 		return ERROR;
 	}
 
 	List temp = NULL;
 	
-	temp = (List)realloc((*L).Pointer,(*L).length+1);
-	if(!temp)
+	temp = (List)realloc((*L).Pointer,((*L).length+1) * sizeof(ElemType) );
+	if(temp != NULL)
 	{
 		(*L).Pointer = temp;
-		(*L).length += 1;
+		//(*L).length += 1;
 	
-		if(i == (*L).length+1)
+		if(i == (*L).length)
 		{
-			(*L).Pointer[i-1] = e;
+			(*L).Pointer[i] = e;
 		}
 		else
 		{
+			/*
 			begin = (*L).Pointer;
 			end   = (*L).Pointer + ((*L).length-1) * sizeof(ElemType);
-			
-			/*
-			for(count = end;count > begin;count--)
-			{
-				(*L).Pointer[*count] = (*L).Pointer[*(count)-1];
-			}
 			*/
+			
+			for(count = (*L).length - 1;count >= i-1;count--)
+			{
+				(*L).Pointer[count+1] = (*L).Pointer[count];
+			}
+			(*L).Pointer[i - 1] = e;
 		}
+		(*L).length += 1;
 	}
 	else
 	{
@@ -108,23 +115,25 @@ Status ListInsert(Node *L,int i,ElemType e)
 	}
 }
 
-Status ListTraverse(List L,int (*visit)())
+Status ListTraverse(Node L,int (*visit)())
 {
 	int i = 0;
 	int result = 0;
-	for(i = 0; i < INIT_SIZE; i++)
+	printf("------------------\n");
+	for(i = 0; i < L.length; i++)
 	{
-		result = visit(L[i]);
+		result = visit(L.Pointer[i],i);
 		if(result == FALSE)
 		{
 			return FALSE;
 		}
 	}
+	printf("------------------\n");
 }
 
-int print(ElemType e)
+int print(ElemType e,int i)
 {
-	printf("e<%d>\n",e);
+	printf("e%d<%d>\n",i,e);
 }
 
 Status PriorElem(Node L,ElemType cur,ElemType *pre)
@@ -273,6 +282,7 @@ Status DestroyList(Node *L)
 {
 	if( (*L).Pointer != NULL)
 	{
+		printf("free list");
 		free((*L).Pointer);
 	}
 	else
