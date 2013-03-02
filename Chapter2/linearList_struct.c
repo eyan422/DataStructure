@@ -4,30 +4,27 @@
 #include <Common.h>
 
 typedef int ElemType;
+typedef ElemType *List;
 
-/*
 typedef struct
 {
-	ElemType *;
+	List Pointer;
 	int length;
-}
-*/
-
-typedef ElemType *List;
+}Node;
 
 #define INIT_SIZE 10
 
-Status InitList(List *L);
-Status DestroyList(List *L);
+Status InitList(Node *L);
+Status DestroyList(Node *L);
 Status ClearList(List *L);
 Status ListEmpty(List L);
-Status ListLength(List L);
-Status GetElem(List L,int i,ElemType *e);
-Status PutElem(List *L,int i,ElemType e);
-Status LocateElem(List L,ElemType e,int (*compare)());
+Status ListLength(Node L);
+Status GetElem(Node L,int i,ElemType *e);
+Status PutElem(Node *L,int i,ElemType e);
+Status LocateElem(Node L,ElemType e,int (*compare)());
 Status equal(ElemType p1,ElemType e2);
-Status PriorElem(List L,ElemType cur,ElemType *pre);
-Status NextElem(List L,ElemType cur,ElemType *next);
+Status PriorElem(Node L,ElemType cur,ElemType *pre);
+Status NextElem(Node L,ElemType cur,ElemType *next);
 Status ListTraverse(List L,int (*visit)());
 int print(ElemType e);
 void ListInsert(List *L,int i,ElemType e);
@@ -37,40 +34,41 @@ int main()
 {
 	int result = 0;
 	//int (*funcPointer)(ElemType,ElemType) = equal;
-
-	List Pointer;
-	InitList(&Pointer);
+	
+	Node p;
+	//List Pointer;
+	InitList(&p);
 
 	/*
 	ClearList(&Pointer);
 	*/
-	result = ListEmpty(Pointer);
+	result = ListEmpty(p.Pointer);
 	printf("result<%s>\n",result==TRUE?"Empty":"!Empty");	
 
-	result = ListLength(Pointer);
+	result = ListLength(p);
 	printf("Length<%d>\n",result);
 	
-	PutElem(&Pointer,2,5);
-	PutElem(&Pointer,1,4);
-	PutElem(&Pointer,3,6);
-	GetElem(Pointer,2,&result);
+	PutElem(&(p),2,5);
+	PutElem(&(p),1,4);
+	PutElem(&(p),3,6);
+	GetElem(p,2,&result);
 	printf("Get-result<%d>\n",result);
 
 	//LocateElem(Pointer,5,funcPointer);
-	LocateElem(Pointer,5,equal);
+	LocateElem(p,5,equal);
 	
-	PriorElem(Pointer,5,&result);
+	PriorElem(p,5,&result);
 	printf("Prior-result<%d>\n",result);
 
-	NextElem(Pointer,5,&result);
+	NextElem(p,5,&result);
 	printf("Next-result<%d>\n",result);
 	
 	//funcPointer = print;
 	
-	ListTraverse(Pointer,print);
+	ListTraverse(p.Pointer,print);
 	//ListTraverse(Pointer,funcPointer);
 	
-	DestroyList(&Pointer);
+	DestroyList(&p);
 	return OK;
 }
 
@@ -93,25 +91,25 @@ int print(ElemType e)
 	printf("e<%d>\n",e);
 }
 
-Status PriorElem(List L,ElemType cur,ElemType *pre)
+Status PriorElem(Node L,ElemType cur,ElemType *pre)
 {
 	int result = 0;
 	result =  LocateElem(L,cur,equal);
 
 	if( result != FALSE && result != 0)
 	{
-		*pre = L[result - 1];
+		*pre = (L.Pointer)[result - 1];
 	}
 }
 
-Status NextElem(List L,ElemType cur,ElemType *next)
+Status NextElem(Node L,ElemType cur,ElemType *next)
 {
 	int result = 0;
 	result =  LocateElem(L,cur,equal);
 
 	if( result != FALSE && result != INIT_SIZE - 1)
 	{
-		*next = L[result + 1];
+		*next = (L.Pointer)[result + 1];
 	}
 }
 
@@ -127,7 +125,7 @@ Status equal(ElemType p1,ElemType p2)
 		return FALSE;
 	}
 }
-Status PutElem(List *L,int i,ElemType e)
+Status PutElem(Node *L,int i,ElemType e)
 {
 	if( i < 0 || i > ListLength(*L) )
 	{
@@ -135,10 +133,10 @@ Status PutElem(List *L,int i,ElemType e)
 		return ERROR;
 	}	
 	
-	(*L)[i] = e;
+	((*L).Pointer)[i] = e;
 }
 
-Status GetElem(List L,int i,ElemType *e)
+Status GetElem(Node L,int i,ElemType *e)
 {
 	if( i < 0 || i > ListLength(L) )
 	{
@@ -146,15 +144,15 @@ Status GetElem(List L,int i,ElemType *e)
 		return ERROR;
 	}	
 	
-	*e = L[i];
+	*e = (L.Pointer)[i];
 }
 
-Status LocateElem(List L,ElemType e,int (*compare)())
+Status LocateElem(Node L,ElemType e,int (*compare)())
 {
 	int i = 0;
 	for(i = 0; i < ListLength(L); i++)
 	{
-		if( compare(L[i],e) == TRUE )
+		if( compare((L.Pointer)[i],e) == TRUE )
 		{
 			//printf("The element locates at %d\n",i);
 			return i;
@@ -170,11 +168,11 @@ Status LocateElem(List L,ElemType e,int (*compare)())
 	return FALSE;
 }
 
-Status ListLength(List L)
+Status ListLength(Node L)
 {
-	if(L != NULL)
+	if(L.Pointer != NULL)
 	{
-		return INIT_SIZE;
+		return L.length;
 	}
 }
 
@@ -209,11 +207,11 @@ Status ClearList(List *L)
 	}
 }
 
-Status InitList(List *L)
+Status InitList(Node *L)
 {
 	int i = 0;
-	*L = (List)malloc( INIT_SIZE * sizeof(ElemType) );
-	if(!(*L))
+	(*L).Pointer = (List)malloc( INIT_SIZE * sizeof(ElemType) );
+	if( !((*L).Pointer) )
 	{
 		printf("Allocation fails\n");
 		exit(ERROR);
@@ -221,6 +219,7 @@ Status InitList(List *L)
 	else
 	{
 		printf("Allocation succeed\n");
+		(*L).length = INIT_SIZE;
 	}
 	
 	/*
@@ -229,16 +228,16 @@ Status InitList(List *L)
 		(*L)[i] = 0;
 	}
 	*/
-	memset(*L,0,sizeof(*L));
+	memset((*L).Pointer,0,sizeof( (*L).Pointer) );
 	return OK;
 	
 }
 
-Status DestroyList(List *L)
+Status DestroyList(Node *L)
 {
-	if( (*L) != NULL)
+	if( (*L).Pointer != NULL)
 	{
-		free(*L);
+		free((*L).Pointer);
 	}
 	else
 	{
