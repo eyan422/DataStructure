@@ -27,8 +27,8 @@ Status PriorElem(Node L,ElemType cur,ElemType *pre);
 Status NextElem(Node L,ElemType cur,ElemType *next);
 Status ListTraverse(List L,int (*visit)());
 int print(ElemType e);
-void ListInsert(List *L,int i,ElemType e);
-void ListDelete(List *L,int i,ElemType e);
+Status ListInsert(Node *L,int i,ElemType e);
+void ListDelete(Node *L,int i,ElemType e);
 
 int main()
 {
@@ -39,18 +39,16 @@ int main()
 	//List Pointer;
 	InitList(&p);
 
-	/*
-	ClearList(&Pointer);
-	*/
+	//ClearList(&Pointer);
 	result = ListEmpty(p.Pointer);
 	printf("result<%s>\n",result==TRUE?"Empty":"!Empty");	
 
 	result = ListLength(p);
 	printf("Length<%d>\n",result);
 	
-	PutElem(&(p),2,5);
-	PutElem(&(p),1,4);
-	PutElem(&(p),3,6);
+	PutElem(&p,2,5);
+	PutElem(&p,1,4);
+	PutElem(&p,3,6);
 	GetElem(p,2,&result);
 	printf("Get-result<%d>\n",result);
 
@@ -63,13 +61,51 @@ int main()
 	NextElem(p,5,&result);
 	printf("Next-result<%d>\n",result);
 	
-	//funcPointer = print;
-	
 	ListTraverse(p.Pointer,print);
-	//ListTraverse(Pointer,funcPointer);
-	
+
 	DestroyList(&p);
 	return OK;
+}
+Status ListInsert(Node *L,int i,ElemType e)
+{
+	int *count = NULL;
+	int *begin = NULL;
+	int *end = NULL;
+	if( i < 0 || i > (ListLength(*L) + 1) )
+	{
+		printf("i<%d> is out of range[0-%d]\n",i,ListLength(*L)+1);
+		return ERROR;
+	}
+
+	List temp = NULL;
+	
+	temp = (List)realloc((*L).Pointer,(*L).length+1);
+	if(!temp)
+	{
+		(*L).Pointer = temp;
+		(*L).length += 1;
+	
+		if(i == (*L).length+1)
+		{
+			(*L).Pointer[i-1] = e;
+		}
+		else
+		{
+			begin = (*L).Pointer;
+			end   = (*L).Pointer + ((*L).length-1) * sizeof(ElemType);
+			
+			/*
+			for(count = end;count > begin;count--)
+			{
+				(*L).Pointer[*count] = (*L).Pointer[*(count)-1];
+			}
+			*/
+		}
+	}
+	else
+	{
+		printf("Realloc fails\n");
+	}
 }
 
 Status ListTraverse(List L,int (*visit)())
@@ -129,7 +165,7 @@ Status PutElem(Node *L,int i,ElemType e)
 {
 	if( i < 0 || i > ListLength(*L) )
 	{
-		printf("i is out of range[0-%d]",ListLength(*L));
+		printf("i is out of range[0-%d]\n",ListLength(*L));
 		return ERROR;
 	}	
 	
@@ -140,7 +176,7 @@ Status GetElem(Node L,int i,ElemType *e)
 {
 	if( i < 0 || i > ListLength(L) )
 	{
-		printf("i is out of range[0-%d]",ListLength(L));
+		printf("i is out of range[0-%d]\n",ListLength(L));
 		return ERROR;
 	}	
 	
@@ -210,7 +246,7 @@ Status ClearList(List *L)
 Status InitList(Node *L)
 {
 	int i = 0;
-	(*L).Pointer = (List)malloc( INIT_SIZE * sizeof(ElemType) );
+	(*L).Pointer = (List)malloc(INIT_SIZE * sizeof(ElemType));
 	if( !((*L).Pointer) )
 	{
 		printf("Allocation fails\n");
@@ -228,7 +264,7 @@ Status InitList(Node *L)
 		(*L)[i] = 0;
 	}
 	*/
-	memset((*L).Pointer,0,sizeof( (*L).Pointer) );
+	memset((*L).Pointer,0,sizeof((*L).Pointer));
 	return OK;
 	
 }
