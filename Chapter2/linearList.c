@@ -6,7 +6,7 @@
 typedef int ElemType;
 typedef ElemType *List;
 
-#define INIT_SIZE 100
+#define INIT_SIZE 10
 
 Status InitList(List *L);
 Status DestroyList(List *L);
@@ -14,8 +14,11 @@ Status ClearList(List *L);
 Status ListEmpty(List L);
 Status ListLength(List L);
 Status GetElem(List L,int i,ElemType *e);
+Status PutElem(List *L,int i,ElemType e);
 Status LocateElem(List L,ElemType e,int (*compare)());
 Status equal(ElemType p1,ElemType e2);
+Status PriorElem(List L,ElemType cur,ElemType *pre);
+Status NextElem(List L,ElemType cur,ElemType *next);
 
 int main()
 {
@@ -34,17 +37,49 @@ int main()
 	result = ListLength(Pointer);
 	printf("Length<%d>\n",result);
 	
+	PutElem(&Pointer,2,5);
+	PutElem(&Pointer,1,4);
+	PutElem(&Pointer,3,6);
 	GetElem(Pointer,2,&result);
-	printf("result<%d>\n",result);
+	printf("Get-result<%d>\n",result);
 
-	LocateElem(Pointer,0,funcPointer);	
+	LocateElem(Pointer,5,funcPointer);
+	
+	PriorElem(Pointer,5,&result);
+	printf("Prior-result<%d>\n",result);
+
+	NextElem(Pointer,5,&result);
+	printf("Next-result<%d>\n",result);
 
 	DestroyList(&Pointer);
 	return OK;
 }
 
+Status PriorElem(List L,ElemType cur,ElemType *pre)
+{
+	int result = 0;
+	result =  LocateElem(L,cur,equal);
+
+	if( result != FALSE && result != 0)
+	{
+		*pre = L[result - 1];
+	}
+}
+
+Status NextElem(List L,ElemType cur,ElemType *next)
+{
+	int result = 0;
+	result =  LocateElem(L,cur,equal);
+
+	if( result != FALSE && result != INIT_SIZE - 1)
+	{
+		*next = L[result + 1];
+	}
+}
+
 Status equal(ElemType p1,ElemType p2)
 {
+	//printf("p1<%d>,p2<%d>\n",p1,p2);
 	if(p1 == p2)
 	{
 		return TRUE;
@@ -53,6 +88,16 @@ Status equal(ElemType p1,ElemType p2)
 	{
 		return FALSE;
 	}
+}
+Status PutElem(List *L,int i,ElemType e)
+{
+	if( i < 0 || i > ListLength(*L) )
+	{
+		printf("i is out of range[0-%d]",ListLength(*L));
+		return ERROR;
+	}	
+	
+	(*L)[i] = e;
 }
 
 Status GetElem(List L,int i,ElemType *e)
@@ -73,15 +118,18 @@ Status LocateElem(List L,ElemType e,int (*compare)())
 	{
 		if( compare(L[i],e) == TRUE )
 		{
-			printf("The element locates at %d\n",i);
-			return OK;
+			//printf("The element locates at %d\n",i);
+			return i;
 		}
+		/*
 		else
 		{
 			printf("Element does not exist\n");
 			return FALSE;
 		}
+		*/
 	}
+	return FALSE;
 }
 
 Status ListLength(List L)
