@@ -19,11 +19,13 @@ Status LocateElem(List L,ElemType e,int (*compare)());
 Status equal(ElemType p1,ElemType e2);
 Status PriorElem(List L,ElemType cur,ElemType *pre);
 Status NextElem(List L,ElemType cur,ElemType *next);
+Status ListTraverse(List L,int (*visit)());
+int print(ElemType e);
 
 int main()
 {
 	int result = 0;
-	int (*funcPointer)(ElemType,ElemType) = equal;
+	//int (*funcPointer)(ElemType,ElemType) = equal;
 
 	List Pointer;
 	InitList(&Pointer);
@@ -43,16 +45,41 @@ int main()
 	GetElem(Pointer,2,&result);
 	printf("Get-result<%d>\n",result);
 
-	LocateElem(Pointer,5,funcPointer);
+	//LocateElem(Pointer,5,funcPointer);
+	LocateElem(Pointer,5,equal);
 	
 	PriorElem(Pointer,5,&result);
 	printf("Prior-result<%d>\n",result);
 
 	NextElem(Pointer,5,&result);
 	printf("Next-result<%d>\n",result);
-
+	
+	//funcPointer = print;
+	
+	ListTraverse(Pointer,print);
+	//ListTraverse(Pointer,funcPointer);
+	
 	DestroyList(&Pointer);
 	return OK;
+}
+
+Status ListTraverse(List L,int (*visit)())
+{
+	int i = 0;
+	int result = 0;
+	for(i = 0; i < INIT_SIZE; i++)
+	{
+		result = visit(L[i]);
+		if(result == FALSE)
+		{
+			return FALSE;
+		}
+	}
+}
+
+int print(ElemType e)
+{
+	printf("e<%d>\n",e);
 }
 
 Status PriorElem(List L,ElemType cur,ElemType *pre)
