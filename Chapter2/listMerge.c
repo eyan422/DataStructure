@@ -67,6 +67,7 @@ int main()
 	listAdjust(&m);
 	
 	ListTraverse(m,print);
+	printf("m.length<%d>\n",m.length);
 	printf("====================\n");
 
 	DestroyList(&p);
