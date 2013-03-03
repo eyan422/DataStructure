@@ -213,7 +213,7 @@ Status ListTraverse(Node L,int (*visit)())
 	printf("------------------\n");
 }
 
-int print(ElemType e,int i)
+void print(ElemType e,int i)
 {
 	printf("e%d<%d>\n",i,e);
 }
