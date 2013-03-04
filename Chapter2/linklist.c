@@ -4,68 +4,104 @@
 
 typedef int ElemType;
 
-typedef struct
+typedef struct lnode
 {
 	ElemType data;
 	struct lnode *next;
 }lnode,*linklist;
 
-void create(linklist head,int size);
-void destroy(linklist head);
+void traverse(linklist head, void(*func)());
+void create(linklist *head,int size);
+void destroy(linklist *head);
+void print(int num);
+Status insert(linklist *head,int i,ElemType);
 
 int main()
 {
-	lnode head;
+	linklist head;
 	create(&head,5);
-	//destroy(head);
+	traverse(head,print);
+
+	insert(&head,2,9);	
+	traverse(head,print);
+
+	destroy(&head);
 	return OK;
 }
 
-void destroy(lnode *head)
+Status insert(linklist *head,int i,ElemType e)
 {
-	linklist index = head;
-
-	if(head == NULL)
+	int count = 0;
+	linklist index = *head;
+	linklist tmp = NULL;
+	
+	for(count = 0;count < i-1; count++)
 	{
-		printf("linklist is null\n");
-		exit(ERROR);
+		index = index->next;
 	}
+	
+	tmp = (linklist)malloc(sizeof(lnode));
+	(*tmp).next = NULL;
+	(*tmp).data = e;
 
-	if( head->next == NULL)
-	{
-		free(head);
-	}
-	else
-	{
-		while( head->next != NULL )
-		{
-			index = (linklist)(head->next);
-			free(head);
-			head = index;
-		}
-		free(head);
-		head = NULL;
-		index = NULL;
-	}	
+	tmp->next = index->next;
+	index->next = tmp;
 }
 
-void create(lnode *head,int size)
+void print(int num)
+{
+	printf("%d ",num);
+}
+
+void traverse(linklist head,void (*func)())
+{
+	linklist index = head;
+	
+	while(index != NULL)
+	{
+		func((*index).data);
+		index = index->next;
+	}
+	printf("\n");
+}
+
+void create(linklist *head,int size)
 {
 	int i = 0;
-	lnode *tmp = NULL;
-	lnode *index = head;
+	linklist tmp = NULL;
+	linklist index;
 
-	head = (lnode *)malloc(sizeof(lnode));
-	(*head).next = NULL;
-	(*head).data = 0;
-	
-	for(i = 0; i < size; i++)
+	*head = (linklist)malloc(sizeof(lnode));
+	if((*head) != NULL)
 	{
-		tmp = (linklist)malloc(sizeof(lnode));
-		(*tmp).data = i;
-		(*tmp).next = NULL;
+		printf("Allocation succeeds\n");
+		
+		(**head).next = NULL;
+		(**head).data = -1;
+		
+		index = *head;
+		
+		for(i = 0; i < size; i++)
+		{
+			tmp = (linklist)malloc(sizeof(lnode));
+			(*tmp).data = i;
+			(*tmp).next = NULL;
 	
-		(*index).next = (lnode *)tmp;
-		index = tmp;
+			(*index).next = tmp;
+			index = tmp;
+		}
 	}
+}
+
+void destroy(linklist *head)
+{
+	linklist index = *head;
+	
+	while((**head).next != NULL)
+	{
+		index = (**head).next;
+		free(*head);
+		*head = index;
+	}
+	printf("free succeeds");
 }
