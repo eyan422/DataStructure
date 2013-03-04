@@ -11,7 +11,8 @@ typedef struct lnode
 }lnode,*linklist;
 
 void traverse(linklist head, void(*func)());
-void create(linklist *head,int size);
+void createHead(linklist *head,int size);
+void createTail(linklist *head,int size);
 void destroy(linklist *head);
 void print(int num);
 Status insert(linklist *head,int i,ElemType);
@@ -19,14 +20,46 @@ Status insert(linklist *head,int i,ElemType);
 int main()
 {
 	linklist head;
-	create(&head,5);
+	createHead(&head,5);
 	traverse(head,print);
 
 	insert(&head,2,9);	
 	traverse(head,print);
-
 	destroy(&head);
+	
+	linklist tail;
+	createTail(&tail,5);
+	insert(&tail,2,12);
+	traverse(tail,print);
+	destroy(&tail);
 	return OK;
+}
+
+void createTail(linklist *head,int size)
+{
+	int i = 0;
+	linklist tmp = NULL;
+	
+	*head = (linklist)malloc(sizeof(lnode));
+	(**head).next = NULL;
+	(**head).data = -1;
+	
+	if(*head != NULL)
+	{
+		printf("Allocation succeeds\n");		
+
+		for(i=0; i<size; i++)
+		{
+			tmp = (linklist)malloc(sizeof(lnode));
+			if(tmp != NULL)
+			{
+				(*tmp).next = (*head);
+				(*tmp).data = i;
+			
+				*head = tmp;
+			}
+		}
+	}
 }
 
 Status insert(linklist *head,int i,ElemType e)
@@ -35,7 +68,7 @@ Status insert(linklist *head,int i,ElemType e)
 	linklist index = *head;
 	linklist tmp = NULL;
 	
-	for(count = 0;count < i-1; count++)
+	for(count = 0;count < i-1 && index != NULL; count++)
 	{
 		index = index->next;
 	}
@@ -65,7 +98,7 @@ void traverse(linklist head,void (*func)())
 	printf("\n");
 }
 
-void create(linklist *head,int size)
+void createHead(linklist *head,int size)
 {
 	int i = 0;
 	linklist tmp = NULL;
@@ -103,5 +136,5 @@ void destroy(linklist *head)
 		free(*head);
 		*head = index;
 	}
-	printf("free succeeds");
+	printf("free succeeds\n");
 }
