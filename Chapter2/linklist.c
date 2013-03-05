@@ -15,7 +15,9 @@ void createHead(linklist *head,int size);
 void createTail(linklist *head,int size);
 void destroy(linklist *head);
 void print(int num);
-Status insert(linklist *head,int i,ElemType);
+Status insert(linklist *head,int i,ElemType e);
+Status merge(linklist la,linklist lb,linklist *lc);
+Status insertTail(linklist *head,ElemType e);
 
 int main()
 {
@@ -23,16 +25,68 @@ int main()
 	createHead(&head,5);
 	traverse(head,print);
 
-	insert(&head,2,9);	
+	//insert(&head,2,9);
+	insertTail(&head,10);	
 	traverse(head,print);
 	destroy(&head);
 	
 	linklist tail;
 	createTail(&tail,5);
-	insert(&tail,2,12);
+	traverse(tail,print);
+	insertTail(&tail,9);	
+	//insert(&tail,2,12);
 	traverse(tail,print);
 	destroy(&tail);
 	return OK;
+}
+
+Status insertTail(linklist *head,ElemType e)
+{
+	linklist index = *head;
+	linklist tmp = NULL;
+	while(index->next != NULL)
+	{
+		index = index->next;
+	}
+	
+	tmp = (linklist)malloc(sizeof(lnode));
+	tmp->data = e;
+	tmp->next = NULL;
+
+	index->next = tmp;
+
+	return OK;
+}
+
+Status merge(linklist la,linklist lb,linklist *lc)
+{
+	linklist pa = la;
+	linklist pb = lb;
+	linklist *pc = lc;
+
+	while( (pa->next != NULL) && (pb->next != NULL) )
+	{
+		if( (*pa).data > (*pb).data )
+		{
+			(*pc)->next = pa;
+			pa = pa->next;
+		}
+		else
+		{
+			(*pc)->next = pb;
+			pb = pb->next;
+		}
+	}
+	
+	while(pa->next != NULL)
+	{	
+		(*pc)->next = pa;
+	}
+	
+	while(pb->next != NULL)
+	{
+		(*pc)->next = pb;
+	}
 }
 
 void createTail(linklist *head,int size)
