@@ -28,7 +28,6 @@ int main()
 	//insert(&head,2,9);
 	insertTail(&head,10);	
 	traverse(head,print);
-	destroy(&head);
 	
 	linklist tail;
 	createTail(&tail,5);
@@ -36,6 +35,14 @@ int main()
 	insertTail(&tail,9);	
 	//insert(&tail,2,12);
 	traverse(tail,print);
+
+	linklist test;
+	createHead(&test,1);
+	traverse(test,print);
+	//merge(head,tail,&test);
+	//traverse(test,print);
+
+	destroy(&head);
 	destroy(&tail);
 	return OK;
 }
@@ -68,11 +75,12 @@ Status merge(linklist la,linklist lb,linklist *lc)
 	{
 		if( (*pa).data > (*pb).data )
 		{
-			(*pc)->next = pa;
+			insertTail(lc,pa->data);
 			pa = pa->next;
 		}
 		else
 		{
+			insertTail(lc,pb->data);
 			(*pc)->next = pb;
 			pb = pb->next;
 		}
