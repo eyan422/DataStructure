@@ -66,6 +66,9 @@ int main()
 	ListLength(test,"test");
 	
 	GetElem(head,2,&result);
+	traverse(head,print);
+	PutElem(&head,3,result);
+	traverse(head,print);
 
 	destroy(&head);
 	destroy(&tail);
@@ -104,7 +107,30 @@ Status GetElem(linklist head,int i,ElemType *e)
 
 Status PutElem(linklist *head,int i,ElemType e)
 {
-
+	int count = 0;
+	char *pclFunc = "PutElem";
+	linklist index = *head;
+	
+	if(index != NULL)
+	{
+		if(i < 0 || i > (ListLength(*head,pclFunc) - 1))
+		{
+			printf( "%s i is out of range[0-%d]\n",pclFunc,(ListLength(*head,pclFunc)-1) );
+		}
+		else
+		{
+			for(count = 0; count < i; count++)
+			{
+				index = index->next;
+			}
+			index->data = e;
+			printf("%s data<%d>\n",pclFunc,index->data);
+		}
+	}
+	else
+	{
+		printf("\n");
+	}
 }
 
 Status LocateElem(linklist head,ElemType e,int (*compare)())
