@@ -27,23 +27,26 @@ int main()
 
 	//insert(&head,2,9);
 	insertTail(&head,10);	
+	insertTail(&head,12);	
 	traverse(head,print);
 	
 	linklist tail;
-	createTail(&tail,5);
+	createTail(&tail,7);
 	traverse(tail,print);
 	insertTail(&tail,9);	
+	insertTail(&tail,11);	
 	//insert(&tail,2,12);
 	traverse(tail,print);
 
 	linklist test;
 	createHead(&test,1);
 	traverse(test,print);
-	//merge(head,tail,&test);
-	//traverse(test,print);
+	merge(head,tail,&test);
+	traverse(test,print);
 
 	destroy(&head);
 	destroy(&tail);
+	destroy(&test);
 	return OK;
 }
 
@@ -69,32 +72,46 @@ Status merge(linklist la,linklist lb,linklist *lc)
 {
 	linklist pa = la;
 	linklist pb = lb;
-	linklist *pc = lc;
-
+	linklist index = *lc;
+	
 	while( (pa->next != NULL) && (pb->next != NULL) )
 	{
 		if( (*pa).data > (*pb).data )
 		{
 			insertTail(lc,pa->data);
-			pa = pa->next;
+			//pa = pa->next;
 		}
 		else
 		{
 			insertTail(lc,pb->data);
-			(*pc)->next = pb;
-			pb = pb->next;
+			//pb = pb->next;
 		}
+		pa = pa->next;
+		pb = pb->next;
 	}
 	
-	while(pa->next != NULL)
-	{	
-		(*pc)->next = pa;
-	}
-	
-	while(pb->next != NULL)
+	while(pa != NULL)
 	{
-		(*pc)->next = pb;
+		insertTail(lc,pa->data);
+		pa = pa->next;	
 	}
+	
+	while(pb != NULL)
+	{
+		while(index->next != NULL)
+		{
+			index= index->next;
+		}
+		
+		printf("lc final element<%d>\n",index->data);		
+		
+		if(index->data < pb->data)
+		{
+			insertTail(lc,pb->data);
+		}
+		pb = pb->next;
+	}
+	
 }
 
 void createTail(linklist *head,int size)
