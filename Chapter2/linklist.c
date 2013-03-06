@@ -18,6 +18,7 @@ void print(int num);
 Status insert(linklist *head,int i,ElemType e);
 Status merge(linklist la,linklist lb,linklist *lc);
 Status insertTail(linklist *head,ElemType e);
+Status Clear(linklist *head);
 
 int main()
 {
@@ -43,10 +44,25 @@ int main()
 	traverse(test,print);
 	merge(head,tail,&test);
 	traverse(test,print);
+	
+	Clear(&test);
+	printf("-----clear-----\n");
+	traverse(test,print);
 
 	destroy(&head);
 	destroy(&tail);
 	destroy(&test);
+	return OK;
+}
+
+Status Clear(linklist *head)
+{
+	linklist index = *head;
+	while(index != NULL)
+	{
+		index->data = 0;
+		index = index->next;
+	}
 	return OK;
 }
 
