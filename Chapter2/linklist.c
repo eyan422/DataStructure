@@ -27,6 +27,7 @@ Status LocateElem(linklist head,ElemType e,int (*compare)());
 Status equal(ElemType p1, ElemType p2);
 Status PrioElem(linklist head, ElemType cur, ElemType *prev);
 Status NextElem(linklist head, ElemType cur, ElemType *next);
+Status ListDelete(linklist *head,int i, ElemType *e);
 
 int main()
 {
@@ -77,10 +78,33 @@ int main()
 	PrioElem(head,result,&result);
 	traverse(head,print);
 
+	ListDelete(&head,3,&result);
+	traverse(head,print);
+
 	destroy(&head);
 	destroy(&tail);
 	destroy(&test);
 	return OK;
+}
+
+Status ListDelete(linklist *head,int i, ElemType *e)
+{
+	int count = 0;
+	char *pclFunc = "ListDelete";
+	linklist index = *head;	
+
+	if(i < 0 || i > ListLength(*head,pclFunc) - 1)
+	{
+		printf("%s i is out of range[0-%d]\n",pclFunc,(ListLength(*head,pclFunc))-1);
+		return ERROR;
+	}
+	
+	for(count = 0; count < i-1; count++)
+	{
+		index = index->next;
+	}
+	*e = index->data;
+	index->next = index->next->next;
 }
 
 Status PrioElem(linklist head,ElemType e,ElemType *prev)
@@ -89,6 +113,7 @@ Status PrioElem(linklist head,ElemType e,ElemType *prev)
 	char *pclFunc = "PrioElem";
 	linklist cur = head;
 	linklist pre = cur;
+	int length = 0;
 
 	if(head == NULL)
 	{
@@ -97,6 +122,12 @@ Status PrioElem(linklist head,ElemType e,ElemType *prev)
 	}
 	else
 	{
+		if(LocateElem(head,e,equal) == 0)
+		{
+			printf("%s The e<%s> is the first element\n");
+			return ERROR;
+		}
+		
 		while(cur != NULL)
 		{
 			pre = cur;
@@ -116,7 +147,36 @@ Status PrioElem(linklist head,ElemType e,ElemType *prev)
 
 Status NextElem(linklist head,ElemType cur,ElemType *next)
 {
+	int count = 0;
+	char *pclFunc = "NextElem";
+	linklist index = head;
+	
+	if(head != NULL)
+	{
+		if(LocateElem(head,cur,equal) == ListLength(head,pclFunc)-1)
+		{
+			printf("%s The e<%s> is the final element\n");
+			return ERROR;
+		}
 
+		while(index != NULL)
+		{
+			index = index->next;
+			count++;		
+
+			if(index->data == cur)
+			{
+				*next = index->next->data;
+				printf("%s The cur<%d>[%d], the next<%d>[%d]\n",pclFunc,cur,count,*next,count+1);
+				return OK;
+			}
+		}	
+		return ERROR;
+	}
+	else
+	{
+		printf("%s The head is NULL\n",pclFunc);
+	}
 }
 
 Status equal(ElemType p1, ElemType p2)
