@@ -19,9 +19,15 @@ Status insert(linklist *head,int i,ElemType e);
 Status merge(linklist la,linklist lb,linklist *lc);
 Status insertTail(linklist *head,ElemType e);
 Status Clear(linklist *head);
+Status ListEmpty(linklist head);
+int ListLength(linklist head,char *string);
+Status GetElem(linklist head,int i,ElemType *e);
+Status PutElem(linklist *head,int i,ElemType e);
+Status LocateElem(linklist head,ElemType e,int (*compare)());
 
 int main()
 {
+	ElemType result = 0;
 	linklist head;
 	createHead(&head,5);
 	traverse(head,print);
@@ -48,11 +54,102 @@ int main()
 	Clear(&test);
 	printf("-----clear-----\n");
 	traverse(test,print);
+	
+	linklist empty = NULL;
+	empty = (linklist)malloc(sizeof(lnode));
+	empty->next = NULL;
+	empty->data = 0;
+	ListEmpty(empty);	
+
+	ListLength(head,"head");
+	ListLength(tail,"tail");
+	ListLength(test,"test");
+	
+	GetElem(head,2,&result);
 
 	destroy(&head);
 	destroy(&tail);
 	destroy(&test);
 	return OK;
+}
+
+Status GetElem(linklist head,int i,ElemType *e)
+{
+	int count = 0;
+	char *pclFunc = "GetElem";
+	
+	linklist index = head;
+	
+	if(head != NULL)
+	{	
+		if(i < 0 || i > (ListLength(head,pclFunc) - 1) )
+		{
+			printf( "%s i is out of range[0-%d]\n",pclFunc,(ListLength(head,pclFunc)-1) );
+		}
+		else
+		{
+		 	for(count = 0; count < i; count++)
+			{
+				index = index->next;		
+			}
+			*e = index->data;
+			printf("%s data<%d>\n",pclFunc,*e);
+		}
+	}
+	else
+	{
+		printf("%s head is NULL\n",pclFunc);
+	}
+}
+
+Status PutElem(linklist *head,int i,ElemType e)
+{
+
+}
+
+Status LocateElem(linklist head,ElemType e,int (*compare)())
+{
+
+}
+
+int ListLength(linklist head, char *string)
+{
+	int length = 0;
+	linklist index = head;
+	if(head != NULL)
+	{
+		while(index != NULL)
+		{
+			index = index->next;
+			length++;
+		}
+		printf("[%s]length is <%d>\n",string,length);
+	}	
+	else
+	{
+		printf("head is null\n");
+	}
+}
+
+Status ListEmpty(linklist head)
+{
+	if(head != NULL)
+	{
+		if(head->next == NULL)
+		{	
+			printf("list is empty\n");
+			return TRUE;
+		}
+		else
+		{
+			printf("list is not empty\n");
+			return FALSE;
+		}
+	}
+	else
+	{
+		printf("head is null\n");
+	}
 }
 
 Status Clear(linklist *head)
@@ -225,7 +322,7 @@ void destroy(linklist *head)
 {
 	linklist index = *head;
 	
-	while((**head).next != NULL)
+	while(*head != NULL)
 	{
 		index = (**head).next;
 		free(*head);
