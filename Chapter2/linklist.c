@@ -25,6 +25,8 @@ Status GetElem(linklist head,int i,ElemType *e);
 Status PutElem(linklist *head,int i,ElemType e);
 Status LocateElem(linklist head,ElemType e,int (*compare)());
 Status equal(ElemType p1, ElemType p2);
+Status PrioElem(linklist head, ElemType cur, ElemType *prev);
+Status NextElem(linklist head, ElemType cur, ElemType *next);
 
 int main()
 {
@@ -72,12 +74,49 @@ int main()
 	traverse(head,print);
 	
 	LocateElem(head,result,equal);
+	PrioElem(head,result,&result);
 	traverse(head,print);
 
 	destroy(&head);
 	destroy(&tail);
 	destroy(&test);
 	return OK;
+}
+
+Status PrioElem(linklist head,ElemType e,ElemType *prev)
+{
+	int count = 0;
+	char *pclFunc = "PrioElem";
+	linklist cur = head;
+	linklist pre = cur;
+
+	if(head == NULL)
+	{
+		printf("%s head is NULL\n",pclFunc);
+		return ERROR;
+	}
+	else
+	{
+		while(cur != NULL)
+		{
+			pre = cur;
+			cur = cur->next;
+			count++;
+
+			if(cur->data == e)
+			{
+				*prev = pre->data;
+				printf("%s The cur is <%d>[%d],the prev is <%d>[%d]\n",pclFunc,e,count,*prev,count-1);
+				return OK;
+			}
+		}
+		return FALSE;
+	}
+}
+
+Status NextElem(linklist head,ElemType cur,ElemType *next)
+{
+
 }
 
 Status equal(ElemType p1, ElemType p2)
