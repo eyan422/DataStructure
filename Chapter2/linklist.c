@@ -24,6 +24,7 @@ int ListLength(linklist head,char *string);
 Status GetElem(linklist head,int i,ElemType *e);
 Status PutElem(linklist *head,int i,ElemType e);
 Status LocateElem(linklist head,ElemType e,int (*compare)());
+Status equal(ElemType p1, ElemType p2);
 
 int main()
 {
@@ -69,11 +70,26 @@ int main()
 	traverse(head,print);
 	PutElem(&head,3,result);
 	traverse(head,print);
+	
+	LocateElem(head,result,equal);
+	traverse(head,print);
 
 	destroy(&head);
 	destroy(&tail);
 	destroy(&test);
 	return OK;
+}
+
+Status equal(ElemType p1, ElemType p2)
+{
+	if(p1 == p2)
+	{
+		return TRUE;
+	}
+	else
+	{
+		return FALSE;
+	}
 }
 
 Status GetElem(linklist head,int i,ElemType *e)
@@ -135,7 +151,24 @@ Status PutElem(linklist *head,int i,ElemType e)
 
 Status LocateElem(linklist head,ElemType e,int (*compare)())
 {
+	int count = 0;
+	char *pclFunc = "LocateElem";
 
+	linklist index = head;
+
+	while(index != NULL)
+	{
+		if(compare(index->data,e) == TRUE)
+		{
+			printf("%s The element<%d> locates at[%d]\n",pclFunc,e,count);
+			return OK;
+		}
+		
+		index = index->next;
+		count++;
+	}
+
+	return FALSE;
 }
 
 int ListLength(linklist head, char *string)
