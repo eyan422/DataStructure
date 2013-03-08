@@ -12,25 +12,50 @@ typedef struct lnode
 
 Status create(clinkedlist *head);
 Status destroy(clinkedlist *head);
-void insertTail(clinkedlist head,ElemType);
+void insertTail(clinkedlist head,ElemType e);
+void deleteTail(clinkedlist head,ElemType *e);
 void traverse(clinkedlist head,void (*func)());
 void print(ElemType e);
 
 int main()
 {
+	ElemType result;
 	clinkedlist head = NULL;
 	
 	create(&head);
 	insertTail(head,5);
+	insertTail(head,6);
+	insertTail(head,7);
 	traverse(head,print);
+	printf("\n");
+	deleteTail(head,&result);
+	traverse(head,print);
+	printf("\n");
 	destroy(&head);
 	
 	return OK;
 }
 
+void deleteTail(clinkedlist head,ElemType *e)
+{
+	char *pclFunc = "deleteTail";
+
+	clinkedlist index = head;
+	clinkedlist prev = head;
+	
+	while(index->next != head)
+	{
+		prev = index;
+		index = index->next;
+	}
+	prev->next = index->next;
+	*e = index->data;
+	free(index);
+}
+
 void print(ElemType e)
 {
-	printf("ElemType<%d>\n",e);
+	printf("%d",e);
 }
 
 void traverse(clinkedlist head,void(*func)())
