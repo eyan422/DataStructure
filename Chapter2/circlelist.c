@@ -21,6 +21,8 @@ Status insert(clinkedlist head,int i,ElemType e);
 Status delete(clinkedlist head,int i,ElemType *e);
 Status locateElem(clinkedlist head,ElemType e,int (*func)());
 int equal(ElemType p1,ElemType e2);
+Status prev(clinkedlist head,ElemType e,ElemType *result);
+Status next(clinkedlist head,ElemType e,ElemType *result);
 
 int main()
 {
@@ -50,12 +52,65 @@ int main()
 
 	locateElem(head,5,equal);
 	locateElem(head,6,equal);
-
 	traverse(head,print);
 	printf("\n");
+
+	insertTail(head,5);
+	insertTail(head,6);
+	insertTail(head,7);
+	insertTail(head,8);
+	traverse(head,print);
+	printf("\n");
+
+	prev(head,6,&result);
+	next(head,7,&result);
+	traverse(head,print);
+	printf("\n");
+	
 	destroy(&head);
 	
 	return OK;
+}
+
+Status prev(clinkedlist head,ElemType e,ElemType *result)
+{
+	char *pclFunc = "prev";
+
+	clinkedlist index = head->next;
+	clinkedlist prev = head->next;
+	
+	while(index != head)
+	{
+		if(e == index->data)
+		{
+			*result = prev->data;
+			printf("%s The prev of <%d >is <%d>\n",pclFunc,e,*result);
+			return OK;
+		}
+		prev = index;
+		index = index->next;
+	}
+	return ERROR;
+}
+
+Status next(clinkedlist head,ElemType e,ElemType *result)
+{
+	char *pclFunc = "next";
+
+	clinkedlist index = head->next;
+
+	while(index->next != head)
+	{
+		if(e == index->data)
+		{
+			index = index->next;
+			*result = index->data;
+			printf("%s The next of <%d> is <%d>\n",pclFunc,e,*result);
+			return OK;
+		}
+		index = index->next;
+	}
+	return ERROR;
 }
 
 int equal(ElemType p1,ElemType p2)
