@@ -29,8 +29,10 @@ int main()
 	insertTail(head,5);
 	insertTail(head,6);
 	insertTail(head,7);
+	insertTail(head,8);
 	traverse(head,print);
 	printf("\n");
+
 	ListLength(head);
 	deleteTail(head,&result);
 	traverse(head,print);
@@ -38,6 +40,12 @@ int main()
 	ListLength(head);
 	
 	insert(head,1,11);
+	traverse(head,print);
+	printf("\n");
+	//destroy(&head);
+
+	delete(head,1,&result);
+	delete(head,2,&result);
 	traverse(head,print);
 	printf("\n");
 	destroy(&head);
@@ -70,11 +78,41 @@ Status insert(clinkedlist head,int i,ElemType e)
 	tmp->data = e;
 	tmp->next = index;
 	prev->next = tmp;
+	
+	printf("%s Inserted element is <%d>\n",pclFunc,tmp->data);
+	
+	return OK;
 }
 
 Status delete(clinkedlist head,int i,ElemType *e)
 {
-
+	int count = 0;
+	char *pclFunc = "delete";	
+	
+	clinkedlist index = head;
+	index = index->next;
+	clinkedlist prev = head;
+	prev = prev->next;
+	
+	if(i < 0 || i > ListLength(head) - 1)
+	{
+		printf("%s The i<%d> is not in the range[0-%d]\n",ListLength(head)-1);
+		return ERROR;
+	}
+	
+	for(count = 0; count < i; count++)
+	{
+		printf("%sindex->data<%d>\n",pclFunc,index->data);
+		prev = index;
+		index = index->next;
+	}
+	*e = index->data;
+	
+	prev->next = index->next;
+	free(index);
+	
+	printf("%s Inserted element is <%d>\n",pclFunc,*e);
+	return OK;
 }
 
 int ListLength(clinkedlist head)
