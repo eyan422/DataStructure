@@ -19,6 +19,8 @@ void print(ElemType e);
 int ListLength(clinkedlist head);
 Status insert(clinkedlist head,int i,ElemType e);
 Status delete(clinkedlist head,int i,ElemType *e);
+Status locateElem(clinkedlist head,ElemType e,int (*func)());
+int equal(ElemType p1,ElemType e2);
 
 int main()
 {
@@ -42,15 +44,50 @@ int main()
 	insert(head,1,11);
 	traverse(head,print);
 	printf("\n");
-	//destroy(&head);
 
 	delete(head,1,&result);
 	delete(head,2,&result);
+
+	locateElem(head,5,equal);
+	locateElem(head,6,equal);
+
 	traverse(head,print);
 	printf("\n");
 	destroy(&head);
 	
 	return OK;
+}
+
+int equal(ElemType p1,ElemType p2)
+{
+	if(p1 == p2)
+	{
+		return TRUE;
+	}
+	else
+	{
+		return FALSE;
+	}
+}
+
+Status locateElem(clinkedlist head,ElemType e,int(*func)())
+{
+	int count = 0;
+	char *pclFunc = "locateElem";
+	clinkedlist index = head->next;	
+
+	while(index != head)
+	{
+		if(func(index->data,e) == TRUE)
+		{
+			printf("%ss The element<%d> locates at <%d>\n",pclFunc,e,count);
+			return TRUE;
+		}
+		
+		index = index->next;
+		count++;
+	}
+	return FALSE;
 }
 
 Status insert(clinkedlist head,int i,ElemType e)
