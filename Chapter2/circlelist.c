@@ -16,6 +16,7 @@ void insertTail(clinkedlist head,ElemType e);
 void deleteTail(clinkedlist head,ElemType *e);
 void traverse(clinkedlist head,void (*func)());
 void print(ElemType e);
+int ListLength(clinkedlist head);
 
 int main()
 {
@@ -28,12 +29,29 @@ int main()
 	insertTail(head,7);
 	traverse(head,print);
 	printf("\n");
+	ListLength(head);
 	deleteTail(head,&result);
 	traverse(head,print);
 	printf("\n");
+	ListLength(head);
 	destroy(&head);
 	
 	return OK;
+}
+
+int ListLength(clinkedlist head)
+{
+	int length = 0;
+	char *pclFunc = "ListLength";
+
+	clinkedlist index = head;
+	
+	while(index->next != head)
+	{
+		index = index->next;
+		length++;
+	}
+	printf("%s The length is <%d>\n",pclFunc,length);
 }
 
 void deleteTail(clinkedlist head,ElemType *e)
@@ -50,12 +68,13 @@ void deleteTail(clinkedlist head,ElemType *e)
 	}
 	prev->next = index->next;
 	*e = index->data;
+	printf("%s The deleted element is <%d>\n",pclFunc,*e);
 	free(index);
 }
 
 void print(ElemType e)
 {
-	printf("%d",e);
+	printf("%d ",e);
 }
 
 void traverse(clinkedlist head,void(*func)())
