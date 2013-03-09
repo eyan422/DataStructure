@@ -23,11 +23,14 @@ Status locateElem(clinkedlist head,ElemType e,int (*func)());
 int equal(ElemType p1,ElemType e2);
 Status prev(clinkedlist head,ElemType e,ElemType *result);
 Status next(clinkedlist head,ElemType e,ElemType *result);
+Status connect(clinkedlist head,clinkedlist tail,clinkedlist third);
 
 int main()
 {
 	ElemType result;
 	clinkedlist head = NULL;
+	clinkedlist tail = NULL;
+	clinkedlist third = NULL;
 	
 	create(&head);
 	insertTail(head,5);
@@ -66,10 +69,42 @@ int main()
 	next(head,7,&result);
 	traverse(head,print);
 	printf("\n");
+
+	create(&tail);
+	insertTail(tail,1);
+	insertTail(tail,2);
+	insertTail(tail,3);
+	insertTail(tail,4);
+	traverse(tail,print);
+	printf("\n");	
+
+	create(&third);
+	connect(head,tail,third);
+	traverse(third,print);
+	printf("\n");	
 	
 	destroy(&head);
+	destroy(&tail);
 	
 	return OK;
+}
+
+Status connect(clinkedlist head,clinkedlist tail,clinkedlist result)
+{
+	clinkedlist indexH = head->next;
+	clinkedlist indexT = tail->next;
+	
+	while(indexH != head)
+	{
+		insertTail(result,indexH->data);	
+		indexH = indexH->next;
+	}
+	
+	while(indexT != tail)
+	{
+		insertTail(result,indexT->data);	
+		indexT = indexT->next;
+	}	
 }
 
 Status prev(clinkedlist head,ElemType e,ElemType *result)
