@@ -14,6 +14,8 @@ Status create(clinkedlist *head);
 Status destroy(clinkedlist *head);
 void insertTail(clinkedlist head,ElemType e);
 void deleteTail(clinkedlist head,ElemType *e);
+void insertHead(clinkedlist head,ElemType e);
+void deleteHead(clinkedlist head,ElemType *e);
 void traverse(clinkedlist head,void (*func)());
 void print(ElemType e);
 int ListLength(clinkedlist head);
@@ -26,9 +28,10 @@ Status next(clinkedlist head,ElemType e,ElemType *result);
 Status connect(clinkedlist head,clinkedlist tail,clinkedlist third);
 
 int main()
-{
+{	
 	ElemType result;
 	clinkedlist head = NULL;
+	/*
 	clinkedlist tail = NULL;
 	clinkedlist third = NULL;
 	
@@ -85,8 +88,40 @@ int main()
 	
 	destroy(&head);
 	destroy(&tail);
+	*/
+	create(&head);
+	insertHead(head,1);
+	insertHead(head,2);
+	insertHead(head,3);
+	insertHead(head,4);
+	traverse(head,print);
+	printf("\n");	
+	
+	destroy(&head);
 	
 	return OK;
+}
+
+void insertHead(clinkedlist head,ElemType e)
+{
+	clinkedlist index = head;
+	clinkedlist tmp = NULL;
+	
+	if(head != NULL)
+	{	
+		tmp = (clinkedlist)malloc(sizeof(clnode));
+		tmp->data = e;
+		if(tmp != NULL)
+		{
+			tmp->next = index->next;
+			index->next = tmp;
+		}
+	}
+}
+
+void deleteHead(clinkedlist head,ElemType *e)
+{
+
 }
 
 Status connect(clinkedlist head,clinkedlist tail,clinkedlist result)
