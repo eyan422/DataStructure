@@ -25,10 +25,25 @@ void printPoly(polynomial pointer);
 int main()
 {	
 	polynomial p;
+	polynomial b;
+	
+	p = (polynomial)malloc(sizeof(node));
+	b = (polynomial)malloc(sizeof(node));
+	
 	(p->data).coef = 2.0;
 	(p->data).expn = 3;
+	printf("%fX^%d\n",(p->data).coef,(p->data).expn);
+
+	p->next = b;	
+
+	(*b).data.coef = 1.0;
+	(*b).data.expn = 2;
+	printf("%fX^%d\n",(*b).data.coef,(*b).data.expn);
 	
-	printf("%fX^%d ",(p->data).coef,(p->data).expn);
+	(b->data).coef = 1.0;
+	(b->data).expn = 2;
+	printf("%fX^%d\n",(*b).data.coef,(*b).data.expn);
+	//printf("%fX^%d ",(p->next).data.coef,(p->next).data.expn);
 	
 	//CreatePolyn(&p,2);
 	//Traverse(p,printPoly);
