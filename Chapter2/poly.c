@@ -22,7 +22,7 @@ void destroy(poly *pointer);
 void print(poly pointer);
 void traverse(poly pointer, void (*func)());
 void LocElem(poly pointer, Elem dat, int *loc);
-void compare(poly pointer,Elem dat);
+int compare(poly pointer,Elem dat);
 void createElem(Elem *dat, float c, int e);
 
 int main()
@@ -68,6 +68,7 @@ void LocElem(poly pointer, Elem dat, int *loc)
 		if(compare(pointer,dat) == TRUE)
 		{
 			*loc = count;
+			printf("Found:the loc is <%d>\n",*loc);
 		}
 		index = index->next;
 		count++;
