@@ -24,20 +24,65 @@ void traverse(poly pointer, void (*func)());
 void LocElem(poly pointer, Elem dat, int *loc);
 int compare(poly pointer,Elem dat);
 void createElem(Elem *dat, float c, int e);
+void insertHead(poly pointer, Elem dat);
+void insertTail(poly pointer, Elem dat);
 
 int main()
 {
 	int result;
 	poly p;
-	Elem dat;
+	Elem dat,dat1,dat2;
 
 	createElem(&dat,0.0,0);
+	createElem(&dat1,0.2,2);
+	createElem(&dat2,0.3,3);
 	
 	create(&p);
+	insertHead(p,dat1);
+	insertTail(p,dat2);
 	traverse(p,print);
 	LocElem(p, dat, &result);
 	destroy(&p);
 	return OK;
+}
+
+void insertHead(poly pointer, Elem dat)
+{
+	poly tmp = NULL;
+	
+	tmp = (poly)malloc(sizeof(node));
+
+	if(tmp != NULL)
+	{
+		tmp->data.coef = dat.coef;
+		tmp->data.expn = dat.expn;		
+
+		tmp->next = pointer->next;
+		pointer->next = tmp;
+	}
+	
+}
+
+void insertTail(poly pointer, Elem dat)
+{
+	poly index = pointer;
+	poly tmp = NULL;
+	
+	tmp = (poly)malloc(sizeof(node));
+
+	if(tmp != NULL)
+	{
+		tmp->data.coef = dat.coef;
+		tmp->data.expn = dat.expn;
+	
+		while(index->next != NULL)
+		{
+			index = index->next;
+		}
+			
+		index->next = tmp;
+		tmp->next = NULL;
+	}
 }
 
 void createElem(Elem *dat, float c, int e)
@@ -65,7 +110,7 @@ void LocElem(poly pointer, Elem dat, int *loc)
 	
 	while(index != NULL)
 	{
-		if(compare(pointer,dat) == TRUE)
+		if(compare(index,dat) == TRUE)
 		{
 			*loc = count;
 			printf("Found:the loc is <%d>\n",*loc);
@@ -81,7 +126,7 @@ void traverse(poly pointer, void (*func)())
 	
 	while(index != NULL)
 	{
-		func(pointer);
+		func(index);
 		printf("\n");
 		index = index->next;
 	}
