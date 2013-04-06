@@ -21,11 +21,14 @@ void create(poly *pointer);
 void destroy(poly *pointer);
 void print(poly pointer);
 void traverse(poly pointer, void (*func)());
-void LocElem(poly pointer, Elem dat, int *loc);
-int compare(poly pointer,Elem dat);
+int LocElem(poly pointer, Elem dat,int (*func)(poly pointer,Elem dat),int *loc, char *funcName);
+int compareBoth(poly pointer,Elem dat);
 void createElem(Elem *dat, float c, int e);
 void insertHead(poly pointer, Elem dat);
 void insertTail(poly pointer, Elem dat);
+Status OrderInsert(poly pointer,Elem e,int (*func)(poly, Elem));
+int compareExpn(poly, Elem);
+float sum(Elem,Elem);
 
 int main()
 {
@@ -38,12 +41,93 @@ int main()
 	createElem(&dat2,0.3,3);
 	
 	create(&p);
-	insertHead(p,dat1);
-	insertTail(p,dat2);
+	//insertHead(p,dat1);
+	//insertTail(p,dat2);
+	OrderInsert(p,dat2,compareExpn);
+	OrderInsert(p,dat1,compareExpn);
 	traverse(p,print);
-	LocElem(p, dat, &result);
+	LocElem(p, dat1, compareBoth,&result,"compareBoth");
+		
+	createElem(&dat2,0.1,2);
+	OrderInsert(p,dat2,compareExpn);
+	traverse(p,print);
+	
+	createElem(&dat2,-0.1,1);
+	OrderInsert(p,dat2,compareExpn);
+	traverse(p,print);	
+
+	createElem(&dat2,-0.3,2);
+	OrderInsert(p,dat2,compareExpn);
+	traverse(p,print);
+	
 	destroy(&p);
 	return OK;
+}
+
+float sum(Elem a,Elem b)
+{
+	if(a.expn == b.expn)
+	{
+		return (a.coef + b.coef);
+	}
+}
+
+Status OrderInsert(poly pointer,Elem e,int (*func)(poly, Elem))
+{
+	int result = -1;
+	int count = 0;
+	poly prev = pointer;
+	poly index = pointer;
+	poly tmp = NULL;
+	char *pclFunc = "OrderInsert";
+
+	if(LocElem(index,e,func,&result,"compareExpn") == FALSE)
+	{
+		//printf("Not found\n");
+		
+		tmp = (poly)malloc(sizeof(node));
+		tmp->data.coef = e.coef;
+		tmp->data.expn = e.expn;
+		
+		while(index != NULL)
+		{		
+			if(e.expn < index->data.expn)
+			{
+				tmp->next = prev->next;
+				prev->next = tmp;	
+				return;
+			}	
+			prev = index;		
+			index = index->next;
+		}	
+		insertTail(pointer,e);
+
+		return FALSE;
+	}	
+	else
+	{
+		for(count = 0; count < result; count++)
+		{
+			prev = index;
+			index = index->next;
+		}		
+		//print(prev);
+		//print(index);
+		
+		if( sum(index->data,e) != 0)
+		{
+			index->data.coef += e.coef; 
+		}
+		else	
+		{
+			prev->next = index->next;
+			free(index);	
+		}
+		//print(index);
+		//printf("\n");
+	}
+
+	return TRUE;
 }
 
 void insertHead(poly pointer, Elem dat)
@@ -91,33 +175,54 @@ void createElem(Elem *dat, float c, int e)
 	dat->expn = e;
 }
 
-int compare(poly pointer,Elem dat)
+int compareBoth(poly pointer,Elem dat)
 {
 	if(pointer->data.coef == dat.coef && pointer->data.expn == dat.expn)
 	{
-		return TRUE;
+		return 0;
 	}
 	else
 	{
-		return FALSE;
+		return -1;
 	}
 }
 
-void LocElem(poly pointer, Elem dat, int *loc)
+int compareExpn(poly pointer,Elem dat)
+{
+	if(pointer->data.expn == dat.expn)
+	{
+		return 0;
+	}
+	else if(pointer->data.expn > dat.expn)
+	{
+		return 1;
+	}
+	else
+	{
+		return 2;
+	}
+}
+
+int LocElem(poly pointer, Elem dat,int (*func)(poly pointer,Elem dat),int *loc, char *funcName)
 {
 	int count = 0;
+	*loc = -1;
 	poly index = pointer;
 	
+	printf("%s\n",funcName);	
+
 	while(index != NULL)
 	{
-		if(compare(index,dat) == TRUE)
+		if(func(index,dat) == 0)
 		{
 			*loc = count;
-			printf("Found:the loc is <%d>\n",*loc);
+			//printf("Found:the loc is <%d>\n",*loc);
+			return TRUE;
 		}
 		index = index->next;
 		count++;
 	}
+	return FALSE;
 }
 
 void traverse(poly pointer, void (*func)())
