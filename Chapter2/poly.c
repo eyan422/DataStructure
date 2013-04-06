@@ -73,6 +73,10 @@ int main()
 	OrderInsert(b,dat2,compareExpn);
 	createElem(&dat2,-0.1,2);
 	OrderInsert(b,dat2,compareExpn);
+	createElem(&dat2,-0.5,8);
+	OrderInsert(b,dat2,compareExpn);
+	createElem(&dat2,-0.9,7);
+	OrderInsert(b,dat2,compareExpn);
 
 	traverse(b,print);
 	printf("---------------------------------------\n");
@@ -175,6 +179,15 @@ void AddPolyn(poly pa, poly pb)
 		
 				qb = qb->next;
 				break;
+		}
+	}
+	
+	if(qb != NULL)
+	{
+		while(qb != NULL)
+		{
+			OrderInsert(pa,qb->data,compareExpn);
+			qb = qb->next;
 		}
 	}
 }
