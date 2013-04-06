@@ -29,11 +29,16 @@ void insertTail(poly pointer, Elem dat);
 Status OrderInsert(poly pointer,Elem e,int (*func)(poly, Elem));
 int compareExpn(poly, Elem);
 float sum(Elem,Elem);
+void AddPolyn(poly pa, poly pb);
+int cmp(int a, int b);
+int GetExpn(poly p);
+void inserBefore(poly pa, poly node);
 
 int main()
 {
 	int result;
 	poly p;
+	poly b;
 	Elem dat,dat1,dat2;
 
 	createElem(&dat,0.0,0);
@@ -41,6 +46,7 @@ int main()
 	createElem(&dat2,0.3,3);
 	
 	create(&p);
+	create(&b);
 	//insertHead(p,dat1);
 	//insertTail(p,dat2);
 	OrderInsert(p,dat2,compareExpn);
@@ -56,12 +62,112 @@ int main()
 	OrderInsert(p,dat2,compareExpn);
 	traverse(p,print);	
 
+	printf("---------------------------------------\n");
 	createElem(&dat2,-0.3,2);
 	OrderInsert(p,dat2,compareExpn);
 	traverse(p,print);
 	
+	printf("---------------------------------------\n");
+	createElem(&dat2,0.1,1);
+	//createElem(&dat2,0.1,2);
+	OrderInsert(b,dat2,compareExpn);
+	traverse(b,print);
+	printf("---------------------------------------\n");
+	AddPolyn(p,b);
+	traverse(p,print);
+	printf("---------------------------------------\n");
+	
 	destroy(&p);
+	destroy(&b);
 	return OK;
+}
+
+int cmp(int a, int b)
+{
+	if(a == b)
+	{
+		return 0;
+	}
+	else if(a > b)
+	{
+		return -1;
+	}
+	else
+	{
+		return 1;
+	}
+}
+
+int GetExpn(poly p)
+{
+	if(p != NULL)
+	{		
+		return p->data.expn;
+	}
+}
+
+void AddPolyn(poly pa, poly pb)
+{
+	poly qa = NULL;
+	poly qb = NULL;
+	poly tmp = NULL;
+	poly prevA = NULL;
+	//poly prevB = NULL;
+	
+	prevA = pa->next;
+	qa = pa->next;
+	qb = pb->next;
+	
+	int expnA = 0;
+	int expnB = 0;	
+				printf("=========\n");
+
+	while(qa && qb)
+	{
+		expnA = GetExpn(qa);
+		expnB = GetExpn(qb);
+		
+		switch( cmp(expnA,expnB) )
+		{
+			case -1:
+				prevA = qa;
+				qa = qa->next;
+				break;
+			case 0:	
+				printf("=========\n");
+				if( sum(qa->data,qb->data) != 0)
+				{
+					printf("!0\n");
+					qa->data.coef += qb->data.coef; 
+					prevA = qa;
+					qa = qa->next;
+				}
+				else	
+				{
+					printf("0\n");
+					print(prevA);
+					printf("\n");
+					print(qa);
+					printf("\n");
+					prevA->next = qa->next;
+					prevA = qa;
+					qa = qa->next;
+					free(qa);	
+				}
+				qb = qb->next;
+				break;
+			case 1:
+				tmp = (poly)malloc(sizeof(node));
+				tmp->data.coef = qb->data.coef;
+				tmp->data.expn = qb->data.expn;
+
+				tmp->next = qa;				
+				prevA->next = tmp;
+		
+				qb = qb->next;
+				break;
+		}
+	}
 }
 
 float sum(Elem a,Elem b)
@@ -271,3 +377,4 @@ void destroy(poly *pointer)
 		index = tmp;
 	}
 }
+
