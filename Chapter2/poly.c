@@ -77,6 +77,8 @@ int main()
 	OrderInsert(b,dat2,compareExpn);
 	createElem(&dat2,-0.9,7);
 	OrderInsert(b,dat2,compareExpn);
+	createElem(&dat2,-0.4,3);
+	OrderInsert(b,dat2,compareExpn);
 
 	traverse(b,print);
 	printf("---------------------------------------\n");
@@ -176,6 +178,7 @@ void AddPolyn(poly pa, poly pb)
 
 				tmp->next = qa;				
 				prevA->next = tmp;
+				prevA = tmp;
 		
 				qb = qb->next;
 				break;
