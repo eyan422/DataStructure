@@ -397,8 +397,8 @@ void destroy(poly *pointer)
 	
 	while(index != NULL)
 	{
-		free(index);
 		tmp = index->next;
+		free(index);
 		index = tmp;
 	}
 }
