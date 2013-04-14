@@ -36,7 +36,8 @@ int main()
 {
 	int j;
   	SqStack s;
-  	SElemType e;
+  	
+	SElemType e;
   	InitStack(&s);
   	
 	for(j=1;j<=12;j++)
@@ -49,7 +50,9 @@ int main()
 	
 	StackTraverse(s,print);
 	//GetTop(s,&e);
-
+	
+	//conversion(s);
+	
 	DestroyStack(&s);
 }
 
@@ -131,7 +134,7 @@ Status InitStack(pStack S)
 
 void StackTraverse(SqStack S, void (*visit)(SElemType))
 {
-	while(S->top > S->base)
+	while(S.top > S.base)
 	{
 		visit(*S.base++);
 	}
@@ -154,3 +157,4 @@ Status Pop(pStack S, SElemType *e)
 	
 	return OK;
 }
+
