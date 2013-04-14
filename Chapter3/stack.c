@@ -72,6 +72,7 @@ void Push(pStack S, SElemType e)
 		S->top = S->base + S->stacksize;
 		S->stacksize += STACKINCREMENT;
 	}
+	
 	*(S->top)++ = e;
 }
 
@@ -89,7 +90,7 @@ Status StackEmpty(pStack S)
 
 void ClearStack(pStack S)
 {
-	S->base = S->top;
+	S->top = S->base;
 }
 
 void DestroyStack(pStack S)
@@ -130,7 +131,7 @@ Status InitStack(pStack S)
 
 void StackTraverse(SqStack S, void (*visit)(SElemType))
 {
-	while(S.top > S.base)
+	while(S->top > S->base)
 	{
 		visit(*S.base++);
 	}
