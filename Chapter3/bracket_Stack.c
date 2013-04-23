@@ -82,6 +82,7 @@ Status BracketPairCheck(SqStack S,char *String)
 	int ilCount = 0;
 	char clTop = '\0';
 	char clPop = '\0';
+	char pclTmp[2] = "\0";
 	char *pclFunc = "BracketPairCheck";
 	
 	//printf("%s The length of %s is <%d>\n",pclFunc,String,(int)strlen(String));
@@ -97,9 +98,10 @@ Status BracketPairCheck(SqStack S,char *String)
 		}
 		else
 		{	
-			//if(strstr(pcgBracket,&String[ilCount]) != 0)
+			pclTmp[0] = String[ilCount];
+			if(strstr(pcgBracket,pclTmp) != 0)
 			{
-				printf("Neither digit nor alpha, ilCount<%d>\n",ilCount);
+				printf("Neither digit nor alpha, String[%d]<%c>\n",ilCount,String[ilCount]);
 				if(ilCount == 0 || StackEmpty(&S) != FALSE) 
 				{
 					//printf("count == 0\n");
