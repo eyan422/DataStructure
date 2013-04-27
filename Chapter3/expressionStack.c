@@ -9,17 +9,28 @@
 typedef char SElemType;
 typedef SElemType OperandType;
 
+/*
 typedef struct
 {
 	SElemType *base;
 	SElemType *top;
 
 	int stacksize;
-}SqStack,* pStack;
+}EqStack, *EpStack;
+*/
+
+typedef struct
+{
+	SElemType *base;
+	SElemType *top;
+
+	int stacksize;
+}SqStack, *pStack;
 
 Status InitStack(pStack S);
 
 Status GetTop(SqStack S, SElemType *e);
+char GetTop1(SqStack S);
 void DestroyStack(pStack S);
 
 void ClearStack(pStack S);
@@ -33,7 +44,8 @@ Status Pop(pStack S, SElemType *e);
 void StackTraverse(SqStack S, void (*visit)(SElemType));
 void print(SElemType c);
 
-OperandType EvaluateExpression();
+//OperandType EvaluateExpression();
+OperandType EvaluateExpression(pStack OPTR, pStack OPND);
 char Precede(char Optr1, char Optr2,char array[][7]);
 
 enum{plus,minus,multi,division,leftBracket,rightBracket,poundSign};
@@ -44,6 +56,8 @@ void PrintOptrRel(char array[][7]);
 char OptrRange[7] = "+-*/()#";
 
 int ConvertSign(char Sign);
+int CheckOptr(char Sign);
+int Operate(char opnd1, char optr, char opnd2);
 
 char OptrRel[7][7] =	
 {
@@ -56,12 +70,17 @@ char OptrRel[7][7] =
 	'<','<','<','<','<','%','=',
 };
 
-#define TEST
+//#define TEST
+
+char Expression[100] = "3*(7-2)#";
 
 int main()
 {
 	SqStack OPTR;
 	SqStack OPND;
+
+	//InitStack(&OPTR);
+	//InitStack(&OPND);
 	
 	#ifdef TEST
 		PrintOptrRel(OptrRel);
@@ -72,7 +91,7 @@ int main()
 		Precede('+','*',OptrRel);
 	#endif
 	
-	//EvaluateExpression();
+	EvaluateExpression(&OPTR,&OPND);
 	/*
 	int j;
   	SqStack s;
@@ -94,22 +113,35 @@ int main()
 	//conversion(s);
 	*/
 	
-	//DestroyStack(&s);
+	//DestroyStack(&OPTR);
+	//DestroyStack(&OPND);
+}
+
+int CheckOptr(char Sign)
+{
+	char pclTmp[2];
+	
+	memset(pclTmp,0,sizeof(pclTmp));
+	pclTmp[0] = Sign;
+	
+	if(strstr(OptrRange,pclTmp) == NULL)
+	{
+		return FALSE;
+	}
+	else
+	{
+		return TRUE;
+	}
 }
 
 int ConvertSign(char Sign)
 {
 	int result = -1;
-	char pclTmp[2];
 	
-	memset(pclTmp,0,sizeof(pclTmp));
-
-	pclTmp[0] = Sign;
-	//printf("pclTmp[%s]\n",pclTmp);
 	
-	if(strstr(OptrRange,pclTmp) == NULL)
+	if(CheckOptr(Sign) == FALSE)
 	{
-		printf("[%s] is not in the range[%s]\n",pclTmp,OptrRange);
+		printf("[%c] is not in the range[%s]\n",Sign,OptrRange);
 		return ERROR;
 	}
 	else
@@ -149,7 +181,7 @@ char Precede(char Optr1, char Optr2, char array[][7])
 	int ilOptr1 = -1;
 	int ilOptr2 = -1;
 
-	printf("Optr1<%c>,cOptr2<%c>\n",Optr1,Optr2);
+	printf("Optr1[%c],Optr2[%c]\n",Optr1,Optr2);
 	
 	ilOptr1 = ConvertSign(Optr1);
 	ilOptr2 = ConvertSign(Optr2);
@@ -182,44 +214,59 @@ void PrintOptrRel(char array[][7])
 
 void TestSign(int Sign)
 {
-		printf("Sign<%d>",Sign);
+	printf("Sign<%d>",Sign);
 }
 
-/*
-OperandType EvaluateExpression()
+
+OperandType EvaluateExpression(pStack OPTR, pStack OPND)
 {
 	char c = '\0';
 	char x = '\0';
+	int ilCount = 0;
+	
+	char a,b,theta;
 
+	SElemType e;
+	
 	InitStack(OPTR);
 	Push(OPTR,'#');
 
 	InitStack(OPND);
-	c = getchar();
-	
-	while(c != '#' || GetTop(OPTR) != '#')
+	c = Expression[ilCount++];
+
+	while(c != '#' ||  GetTop1(*OPTR) != '#')
 	{
-		if( !In(c,OP))
+		if( !CheckOptr(c) )
 		{
 			Push(OPND,c);
-			c = getchar();
+			c = Expression[ilCount++];
 		}
 		else
 		{
-			switch(Precede(GetTop(OPTR),c))
+			switch(Precede(GetTop1(*OPTR),c,OptrRel))
 			{
 				case '<':
 					Push(OPTR,c);
-					c = getchar();
+					//c = getchar();
+					c = Expression[ilCount++];
 					break;
 				case '=':
-					Pop(OPTR,x);	
-					c = getchar();
+					Pop(OPTR,&x);
+					printf("x<%c>\n",x);
+					if(x == '#')
+					{
+						c == x;
+					}
+					//c = getchar();
+					c = Expression[ilCount++];
 					break;
 				case '>':
-					Pop(OPTR,theta);
-					Pop(OPND,b);
-					Pop(OPND,a);
+					Pop(OPTR,&theta);
+					printf("theta[%c]\n",theta);
+					Pop(OPND,&b);
+					printf("b[%c]\n",b);
+					Pop(OPND,&a);
+					printf("a[%c]\n",a);
 					Push(OPND,Operate(a,theta,b));
 					break;
 				default:
@@ -228,9 +275,39 @@ OperandType EvaluateExpression()
 			}
 		}
 	}
-	return GetTop(OPND);
+	printf("Final Result is <%c>\n",GetTop1(*OPND));
+	return GetTop1(*OPND);
 }
-*/
+
+int Operate(char opnd1, char optr, char opnd2)
+{
+	int ilResult = 0;
+	int ilOpnd1 = opnd1 - '0'; 
+	int ilOpnd2 = opnd2 - '0';
+
+	switch(optr)
+	{
+		case '+':
+			ilResult = ilOpnd1 + ilOpnd2;
+			break;
+		case '-':
+			ilResult = ilOpnd1 - ilOpnd2;
+			break;
+		case '*':
+			ilResult = ilOpnd1 * ilOpnd2;
+			break;
+		case '/':
+			ilResult = ilOpnd1 / ilOpnd2;
+			break;
+		default:
+			printf("invalid optr\n");
+			break;
+	}	 
+	
+	printf("ilResult[%d]\n",ilResult);
+	
+	return ilResult + '0';
+}
 
 int StackLength(pStack S)
 {
@@ -290,6 +367,16 @@ Status GetTop(SqStack S, SElemType *e)
 	*e = *(S.top-1);
 	
 	return OK;
+}
+
+char GetTop1(SqStack S)
+{
+	if(S.top == S.base)
+	{
+		return ERROR;
+	}
+	
+	return *(S.top-1);
 }
 
 Status InitStack(pStack S)
