@@ -6,18 +6,17 @@
 #define STACK_INIT_SIZE 100
 #define STACKINCREMENT 10
 
+typedef int ElemType;
 typedef char SElemType;
 typedef SElemType OperandType;
 
-/*
 typedef struct
 {
-	SElemType *base;
-	SElemType *top;
+	ElemType *base;
+	ElemType *top;
 
 	int stacksize;
 }EqStack, *EpStack;
-*/
 
 typedef struct
 {
@@ -28,24 +27,37 @@ typedef struct
 }SqStack, *pStack;
 
 Status InitStack(pStack S);
+Status InitEStack(EpStack S);
 
 Status GetTop(SqStack S, SElemType *e);
+Status GetETop(EqStack E, ElemType *e);
+
 char GetTop1(SqStack S);
+char GetETop1(EqStack E);
+
 void DestroyStack(pStack S);
+void DestroyEStack(EpStack E);
 
 void ClearStack(pStack S);
+void ClearEStack(EpStack E);
 
 Status StackEmpty(pStack S);
+Status StackEEmpty(EpStack E);
 
 int StackLength(pStack S);
+int StackELength(EpStack E);
 
 void Push(pStack S, SElemType e);
+void PushE(EpStack E, ElemType e);
+
 Status Pop(pStack S, SElemType *e);
+Status PopE(EpStack E, ElemType *e);
+
 void StackTraverse(SqStack S, void (*visit)(SElemType));
 void print(SElemType c);
 
 //OperandType EvaluateExpression();
-OperandType EvaluateExpression(pStack OPTR, pStack OPND);
+OperandType EvaluateExpression(pStack OPTR, EpStack OPND);
 char Precede(char Optr1, char Optr2,char array[][7]);
 
 enum{plus,minus,multi,division,leftBracket,rightBracket,poundSign};
@@ -57,7 +69,7 @@ char OptrRange[7] = "+-*/()#";
 
 int ConvertSign(char Sign);
 int CheckOptr(char Sign);
-int Operate(char opnd1, char optr, char opnd2);
+int Operate(int opnd1, char optr, int opnd2);
 
 char OptrRel[7][7] =	
 {
@@ -77,11 +89,9 @@ char Expression[100] = "3*(7-2)#";
 int main()
 {
 	SqStack OPTR;
-	SqStack OPND;
+	//SqStack OPND;
+	EqStack OPND;
 
-	//InitStack(&OPTR);
-	//InitStack(&OPND);
-	
 	#ifdef TEST
 		PrintOptrRel(OptrRel);
 		TestSign(plus);
@@ -92,29 +102,8 @@ int main()
 	#endif
 	
 	EvaluateExpression(&OPTR,&OPND);
-	/*
-	int j;
-  	SqStack s;
-  	
-	SElemType e;
-  	InitStack(&s);
-  	
-	for(j=1;j<=12;j++)
-    	{
-		Push(&s,j);
-	}
-	
-	StackTraverse(s,print);
-  	Pop(&s,&e);
-	
-	StackTraverse(s,print);
-	//GetTop(s,&e);
-	
-	//conversion(s);
-	*/
-	
-	//DestroyStack(&OPTR);
-	//DestroyStack(&OPND);
+
+	return 0;	
 }
 
 int CheckOptr(char Sign)
@@ -218,27 +207,29 @@ void TestSign(int Sign)
 }
 
 
-OperandType EvaluateExpression(pStack OPTR, pStack OPND)
+OperandType EvaluateExpression(pStack OPTR, EpStack OPND)
 {
 	char c = '\0';
 	char x = '\0';
 	int ilCount = 0;
+	int result = 0;
 	
-	char a,b,theta;
+	int a,b;
+	char theta;
 
-	SElemType e;
+	//SElemType e;
 	
 	InitStack(OPTR);
 	Push(OPTR,'#');
 
-	InitStack(OPND);
+	InitEStack(OPND);
 	c = Expression[ilCount++];
 
 	while(c != '#' ||  GetTop1(*OPTR) != '#')
 	{
 		if( !CheckOptr(c) )
 		{
-			Push(OPND,c);
+			PushE(OPND,c-'0');
 			c = Expression[ilCount++];
 		}
 		else
@@ -252,22 +243,28 @@ OperandType EvaluateExpression(pStack OPTR, pStack OPND)
 					break;
 				case '=':
 					Pop(OPTR,&x);
+					/*
 					printf("x<%c>\n",x);
 					if(x == '#')
 					{
 						c == x;
 					}
+					*/
 					//c = getchar();
 					c = Expression[ilCount++];
 					break;
 				case '>':
 					Pop(OPTR,&theta);
 					printf("theta[%c]\n",theta);
-					Pop(OPND,&b);
-					printf("b[%c]\n",b);
-					Pop(OPND,&a);
-					printf("a[%c]\n",a);
-					Push(OPND,Operate(a,theta,b));
+					
+					PopE(OPND,&b);
+					printf("b[%d]\n",b);
+					
+					PopE(OPND,&a);
+					printf("a[%d]\n",a);
+					
+					result = Operate(a,theta,b);
+					PushE(OPND,result);
 					break;
 				default:
 					exit(OVERFLOW);
@@ -275,15 +272,15 @@ OperandType EvaluateExpression(pStack OPTR, pStack OPND)
 			}
 		}
 	}
-	printf("Final Result is <%c>\n",GetTop1(*OPND));
-	return GetTop1(*OPND);
+	printf("Final Result is <%d>\n",GetETop1(*OPND));
+	return GetETop1(*OPND);
 }
 
-int Operate(char opnd1, char optr, char opnd2)
+int Operate(int opnd1, char optr, int opnd2)
 {
 	int ilResult = 0;
-	int ilOpnd1 = opnd1 - '0'; 
-	int ilOpnd2 = opnd2 - '0';
+	int ilOpnd1 = opnd1; 
+	int ilOpnd2 = opnd2;
 
 	switch(optr)
 	{
@@ -306,12 +303,35 @@ int Operate(char opnd1, char optr, char opnd2)
 	
 	printf("ilResult[%d]\n",ilResult);
 	
-	return ilResult + '0';
+	return ilResult;
+}
+
+int StackELength(EpStack E)
+{
+	return E->top - E->base;
 }
 
 int StackLength(pStack S)
 {
 	return S->top - S->base;
+}
+
+void PushE(EpStack E, ElemType e)
+{
+	if(E->top - E->base >= E->stacksize)
+	{
+		E->base = (ElemType *)realloc(E->base,(E->stacksize+STACKINCREMENT)*sizeof(ElemType));
+
+		if(E->base == NULL)
+		{
+			exit(OVERFLOW);
+		}
+	
+		E->top = E->base + E->stacksize;
+		E->stacksize += STACKINCREMENT;
+	}
+	
+	*(E->top)++ = e;
 }
 
 void Push(pStack S, SElemType e)
@@ -332,6 +352,18 @@ void Push(pStack S, SElemType e)
 	*(S->top)++ = e;
 }
 
+Status StackEEmpty(EpStack E)
+{
+	if(E->base == E->top)
+	{
+		return TRUE;
+	}
+	else
+	{
+		return FALSE;
+	}
+}
+
 Status StackEmpty(pStack S)
 {
 	if(S->base == S->top)
@@ -344,9 +376,23 @@ Status StackEmpty(pStack S)
 	}
 }
 
+void ClearEStack(EpStack E)
+{
+	E->top = E->base;
+}
+
+
 void ClearStack(pStack S)
 {
 	S->top = S->base;
+}
+
+void DestroyEStack(EpStack E)
+{
+	free(E->base);
+	E->base = NULL;
+	E->top = NULL;
+	E->stacksize = 0;
 }
 
 void DestroyStack(pStack S)
@@ -369,6 +415,28 @@ Status GetTop(SqStack S, SElemType *e)
 	return OK;
 }
 
+Status GetETop(EqStack E, ElemType *e)
+{
+	if(E.top == E.base)
+	{
+		return ERROR;
+	}
+	
+	*e = *(E.top-1);
+	
+	return OK;
+}
+
+char GetETop1(EqStack E)
+{
+	if(E.top == E.base)
+	{
+		return ERROR;
+	}
+	
+	return *(E.top-1);
+}
+
 char GetTop1(SqStack S)
 {
 	if(S.top == S.base)
@@ -377,6 +445,22 @@ char GetTop1(SqStack S)
 	}
 	
 	return *(S.top-1);
+}
+
+Status InitEStack(EpStack E)
+{
+	E->base = (ElemType *)malloc(STACK_INIT_SIZE * sizeof(ElemType));
+	
+	if(E->base == NULL)
+	{
+		exit(OVERFLOW);
+	}
+
+	E->top = E->base;
+	
+	E->stacksize = STACK_INIT_SIZE;
+
+	return OK;
 }
 
 Status InitStack(pStack S)
@@ -407,6 +491,18 @@ void StackTraverse(SqStack S, void (*visit)(SElemType))
 void print(SElemType c)
 {
 	printf("%d ",c);
+}
+
+Status PopE(EpStack E, ElemType *e)
+{
+	if(E->base == E->top)
+	{
+		return ERROR;
+	}
+	
+	*e = *--(E->top);
+	
+	return OK;
 }
 
 Status Pop(pStack S, SElemType *e)
