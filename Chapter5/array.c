@@ -23,6 +23,19 @@ Status Assign(Array *A, ElemType e,...);
 
 int main()
 {
+	int off;
+	int result;
+	//va_list index;
+	Array A;
+	
+	InitArray(&A,2,2);
+
+	Assign(&A,5,1,1);
+	Value(A,&result,1,1);
+	printf("result:%d\n",result);
+	//Locate(A,1,&off);
+	
+	DestroyArray(&A);	
 
 	return 0;
 }
