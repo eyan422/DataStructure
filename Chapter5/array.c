@@ -16,6 +16,10 @@ typedef struct
 }Array;
 
 Status InitArray(Array *A, int dim, ...);
+Status DestroyArray(Array *A);
+Status Locate(Array A, va_list ap, int *off);
+Status Value(Array A, ElemType *e, ...);
+Status Assign(Array *A, ElemType e,...);
 
 int main()
 {
@@ -78,6 +82,90 @@ Status InitArray(Array *A, int dim, ...)
 	{
 		A->constants[i] = A->bounds[i+1] * A->constants[i+1];
 	}
+
+	return OK;
+}
+
+Status DestroyArray(Array *A)
+{
+	if(A->base == NULL)
+	{
+		return ERROR;
+	}
+
+	free(A->base);
+	A->base = NULL;
+	
+	if(A->bounds == NULL)
+	{
+		return ERROR;
+	}
+
+	free(A->bounds);
+	A->bounds = NULL;
+	
+	if(A->constants == NULL)
+	{
+		return ERROR;
+	}
+	
+	free(A->constants);
+	A->constants = NULL;
+	
+	return OK;
+}
+
+Status Locate(Array A, va_list ap, int *off)
+{
+	int i;
+	int ind;
+	*off = 0;
+	
+	for(i = 0; i < A.dim; ++i)
+	{
+		ind = va_arg(ap,int);
+	
+		if(ind < 0 || ind >= A.bounds[i])
+		{
+			return OVERFLOW;
+		}
+
+		*off += A.constants[i] * ind;
+	}
+
+	return OK;
+}
+
+Status Value(Array A, ElemType *e, ...)
+{
+	int off;
+	int result;
+	va_list ap;
+	va_start(ap,e);
+	
+	if((result = Locate(A,ap,&off)) <= 0)
+	{
+		return result;
+	}
+	
+	*e = *(A.base + off);
+	
+	return OK;
+}
+
+Status Assign(Array *A, ElemType e,...)
+{
+	int off;
+	int result;
+	va_list ap;
+	va_start(ap,e);
+	
+	if((result = Locate(*A,ap,&off)) <= 0)
+	{
+		return result;
+	}
+	
+	*(A->base + off) = e;
 
 	return OK;
 }
