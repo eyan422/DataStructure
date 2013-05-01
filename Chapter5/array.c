@@ -28,7 +28,7 @@ int main()
 	//va_list index;
 	Array A;
 	
-	InitArray(&A,2,2);
+	InitArray(&A,2,2,2);
 
 	Assign(&A,5,1,1);
 	Value(A,&result,1,1);
